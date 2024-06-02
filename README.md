@@ -15,14 +15,41 @@ sudo apt-get install python3.10-venv
 # создание виртуального пространства
 python3.10 -m venv .mle-sprint3-venv
 source .mle-sprint3-venv/bin/activate
-pip install fastapi
-pip install "uvicorn[standard]" 
-pip install catboost 
+pip install -r requirements.txt
 
+# /home/mle-user/mle-sprint3/mle-project-sprint-3-v001/
 
+cd services/app/
+uvicorn app:app
 
+uvicorn --app-dir=services/app app:app
+uvicorn --app-dir=services/app app:app --host 127.0.0.1 --port 8000
 
+python -m services.app.fastapi_handler
 
+curl -X GET "http://127.0.0.1:8000/"
+
+curl -X POST "http://127.0.0.1:8000/predict" \
+-H "Content-Type: application/json" \
+-d '{
+    "floor": 1,
+    "is_apartment": 0,
+    "kitchen_area": 7.0,
+    "living_area": 27.0,
+    "rooms": 2,
+    "total_area": 40.0,
+    "building_id": 764,
+    "build_year": 1936,
+    "building_type_int": 1,
+    "latitude": 55.74044418334961,
+    "longitude": 37.52492141723633,
+    "ceiling_height": 3.0,
+    "flats_count": 63,
+    "floors_total": 7,
+    "has_elevator": 1
+}'
+
+python services/app/tests.py
 
 Этап 1. Написание FastAPI-микросервиса
 На этом этапе проекта вы напишете FastAPI-микросервис для обработки запросов к модели. Для этого:
@@ -38,6 +65,13 @@ pip install catboost
     При запуске микросервиса в Swagger на странице /docs должен быть пример запроса к микросервису. При обращении через запрос неправильного формата микросервис должен выдавать осмысленные сообщения об ошибках.
 
 Независимо от следующих этапов микросервис должен запускаться и корректно работать по инструкции в Instructions.md.
+
+docker pull python:3.11-slim
+docker image ls
+
+es$ docker image build . --tag simple_fast_api:1
+docker container run --publish 4601:8081 --volume=./models:/churn_app/models   --env-file .env simple_fast_api
+
 Этап 2. Контейнеризация микросервиса
 На этом этапе проекта вы напишете Docker Compose для контейнеризации вашего FastAPI-микросервиса. Для этого:
 
