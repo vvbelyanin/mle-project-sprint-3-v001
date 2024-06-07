@@ -63,7 +63,7 @@ python create_model.py
 cd services/app/
 ```
 
-Код класса-обработчика `FastApiHandler` был реализован в файле services/app/fastapi_handler.py.
+Код класса-обработчика `FastApiHandler` был реализован в файле services/app/[fastapi_handler.py](https://github.com/vvbelyanin/mle-project-sprint-3-v001/blob/main/services/app/fastapi_handler.py).
 Метод `validate_params()` класса проверяет параметры модели на соответствие списку требуемых полей.     
 Функция `gen_random_data()` генерирует случайные параметры модели.
      
@@ -123,7 +123,7 @@ POST - ресурс "/predict" выдает score модели либо сооб
  - {"Error": "Problem with request"}
  - 422 Error: Unprocessable Entity в случае ошибки в JSON
 
-Для проверки работы микросервиса создан скрипт tests.py, тестирующий все эндпоинты и различные варианты ошибок входных параметров модели.
+Для проверки работы микросервиса создан скрипт sevices/app/[tests.py](https://github.com/vvbelyanin/mle-project-sprint-3-v001/blob/main/services/app/tests.py), тестирующий все эндпоинты и различные варианты ошибок входных параметров модели.
 
 ```
 
@@ -185,10 +185,10 @@ docker compose down
 
 #### Этап 3. Запуск сервисов для системы мониторинга
   
-- На этом этапе в docker-compose.yaml добавлено описание сервисов prometheus и grafana, 
-новый файл: services/docker-compose-stage-3.yaml    
-- Новый Dockerfile: services/Dockerfile-stage-3    
-- Обновленный код микросервиса находится в файле services/app/app-stage-3.py с добавленным экспортёром с помощью `prometheus_fastapi_instrumentator`
+- На этом этапе в [docker-compose.yaml](https://github.com/vvbelyanin/mle-project-sprint-3-v001/blob/main/services/docker-compose.yaml) добавлено описание сервисов prometheus и grafana, 
+новый файл: services/[docker-compose-stage-3.yaml](https://github.com/vvbelyanin/mle-project-sprint-3-v001/blob/main/services/docker-compose-stage-3.yaml)    
+- Новый Dockerfile: services/[Dockerfile-stage-3](https://github.com/vvbelyanin/mle-project-sprint-3-v001/blob/main/services/Dockerfile-stage-3)    
+- Обновленный код микросервиса находится в файле services/app/[app-stage-3.py](https://github.com/vvbelyanin/mle-project-sprint-3-v001/blob/main/services/app/app-stage-3.py) с добавленным экспортёром с помощью `prometheus_fastapi_instrumentator`
 - Создан файл конфигурации prometheus services/prometheus/prometheus.yml, предусмотрено его сохранение в томе Docker
 - Создан каталог services/grafana/ (см. этап 4)
 - В файл services/.env помещены значения переменных `GRAFANA_USER`, `GRAFANA_PASS`
@@ -208,18 +208,18 @@ docker compose -f docker-compose-stage-3.yaml down
 
 #### Этап 4. Построение дашборда для мониторинга
 
-- В файле Monitoring.md приведены набор и описание ML-метрики реального времени, используемые для мониторинга работы микросервиса
-- В файл с кодом микросервиса добавлены метрики prometheus_client Gauge, Histogram. Обновленный файл сохранен под именем services/app/app-stage-4.py
-- Обновлены и сохранены файлы Dockerfile-stage-4 и docker-compose-stage-4.yaml
-- В файле services/app/load_test.py содержится код, имитирующий нагрузку на сервис, а именно обращения к ресурсам /metrics и /random с интервалами до 1 с
+- В файле [Monitoring.md](https://github.com/vvbelyanin/mle-project-sprint-3-v001/blob/main/Monitoring.md) приведены набор и описание ML-метрики реального времени, используемые для мониторинга работы микросервиса
+- В файл с кодом микросервиса добавлены метрики prometheus_client Gauge, Histogram, обновления сохранены в services/app/[app-stage-4.py](https://github.com/vvbelyanin/mle-project-sprint-3-v001/blob/main/services/app/app-stage-4.py)
+- Обновлены и сохранены файлы services/[Dockerfile-stage-4](https://github.com/vvbelyanin/mle-project-sprint-3-v001/blob/main/services/Dockerfile-stage-4) и services/[docker-compose-stage-4.yaml](https://github.com/vvbelyanin/mle-project-sprint-3-v001/blob/main/services/docker-compose-stage-4.yaml)
+- В файле services/app/[load_test.py](https://github.com/vvbelyanin/mle-project-sprint-3-v001/blob/main/services/app/load_test.py) содержится код, имитирующий нагрузку на сервис, а именно обращения к ресурсам /metrics и /random с интервалами до 1 с
 - В код микросервиса добавлен код для имитации ошибок с заданной вероятностью, а также задержки до 1 с:
 ```
 raise HTTPException(status_code=500, detail="Random failure for testing purposes")
 time.sleep(random.random())
 ```
-- Для гарантии сохранения информации при каждом перестроении контейнера, информация об источнике данных prometheus и дашборде сохраняется средствами Grafana provisioning. Для этого созданы файлы в соответствующих каталогах: /services/garfana/provisioning/dashboards/dashboards.yaml и /services/garfana/provisioning/datasources/datasource.yaml
-- Сохраненный дашборд находится в файле /services/garfana/provisioning/dashboards/dashboard.json
-- Скриншот дашборда находится в файле /services/garfana/provisioning/dashboards/dashboard.json и продублирован в Monitoring.md
+- Для гарантии сохранения информации при каждом перестроении контейнера, информация об источнике данных prometheus и дашборде сохраняется средствами Grafana provisioning. Для этого созданы файлы в соответствующих каталогах: /services/grafana/provisioning/dashboards/[dashboard.yaml](https://github.com/vvbelyanin/mle-project-sprint-3-v001/blob/main/services/grafana/provisioning/dashboards/dashboard.yaml) и /services/garfana/provisioning/datasources/[datasource.yaml](https://github.com/vvbelyanin/mle-project-sprint-3-v001/blob/main/services/grafana/provisioning/datasources/datasource.yaml)
+- Сохраненный дашборд находится в файле /services/garfana/provisioning/dashboards/[dashboard.json](https://github.com/vvbelyanin/mle-project-sprint-3-v001/blob/main/services/grafana/provisioning/dashboards/dashboard.json)
+- Скриншот дашборда находится в файле /services/garfana/provisioning/dashboards/[screenshot.jpg](https://github.com/vvbelyanin/mle-project-sprint-3-v001/blob/main/services/grafana/provisioning/dashboards/screenshot.jpg) и продублирован в Monitoring.md
 ```
 # сборка и запуск контейнера с обновленной конфигурацией в фоновом режиме
 docker compose -f docker-compose-stage-4.yaml up --build -d
