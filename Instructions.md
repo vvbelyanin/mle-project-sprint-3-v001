@@ -115,9 +115,9 @@ curl "http://127.0.0.1:8000/predict" `
 curl "http://127.0.0.1:8000/random" 
 ```
 
-По адресу http://127.0.0.1:8000/docs  - тестирование микросервиса в Swagger
-GET - ресурс "/" выдает "Alive"
-GET - ресурс "/random" выдает случайный score
+По адресу http://127.0.0.1:8000/docs  - тестирование микросервиса в Swagger    
+GET - ресурс "/" выдает "Alive"    
+GET - ресурс "/random" выдает случайный score    
 POST - ресурс "/predict" выдает score модели либо сообщения об ошибках в зависимости от входных данных:
  - {"Error": "Problem with parameters"}
  - {"Error": "Problem with request"}
