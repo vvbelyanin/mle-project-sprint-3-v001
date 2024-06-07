@@ -7,9 +7,6 @@
 # апгрейд менеджера пакетов
 python -m pip install --upgrade pip
 
-# установка модуля виртуального окружения
-pip install venv
-
 # создание виртуального окружения в папке .mle-sprint3-venv
 python -m venv .mle-sprint3-venv
 
@@ -54,8 +51,14 @@ pip install -r requirements.txt
     │   ├── 📄prometheus.yml (конфигурация)
     └── 📄requirements.txt (библиотеки для сборки Docker)
 
-# модель находится в файле sevices/models/fitted_model.pkl, ее можно повторно генерировать командой
-cd services/models
+# модель находится в файле sevices/models/fitted_model.pkl, ее можно повторно генерировать
+# перед запуском создайте/проверьте наличие /.env файла в каталоге проекта со следущими переменными:
+# DB_DESTINATION_HOST
+# DB_DESTINATION_PORT
+# DB_DESTINATION_NAME
+# DB_DESTINATION_USER
+# DB_DESTINATION_PASSWORD
+cd services/models/
 python create_model.py
 
 # если необходимо, вернуться в основную папку
@@ -158,7 +161,7 @@ docker build -t my-fastapi-app:latest .
 # и вывод списка образов для проверки
 docker image ls
 
-# запуск контейнера и вывод списка контейнеров
+# запуск контейнера
 docker run -d -p 8000:8000 my-fastapi-app:latest
 
 # вывод списка запущенных контейнеров
@@ -171,6 +174,7 @@ curl "http://127.0.0.1:8000/random"
 # остановка всех запущенных контейнеров
 docker stop $(docker ps -a -q)
 
+# создайте/проверьте наличие файла services/.env с заданной переменной окружения APP_PORT
 # создание и запуск контейнера в режиме docker compose в фоновом (detached) режиме
 # используется файл docker-compose.yaml
 docker compose up --build -d
@@ -200,7 +204,7 @@ docker compose -f docker-compose-stage-3.yaml up --build -d
 FastAPI-микросервис: http://127.0.0.1:8000/    
 Prometheus: http://127.0.0.1:9090/targets    
 Grafana: http://127.0.0.1:3000    
-В интерфейсе Grafana нужно ввести  логин и пароль, затем выбрать в боковом меню: Dashboards → My dashboard
+В интерфейсе Grafana нужно ввести  логин и пароль и откроется главная страница
 ```
 # остановка и удаление контейнера
 docker compose -f docker-compose-stage-3.yaml down
@@ -219,7 +223,7 @@ time.sleep(random.random())
 ```
 - Для гарантии сохранения информации при каждом перестроении контейнера, информация об источнике данных prometheus и дашборде сохраняется средствами Grafana provisioning. Для этого созданы файлы в соответствующих каталогах: /services/grafana/provisioning/dashboards/[dashboard.yaml](https://github.com/vvbelyanin/mle-project-sprint-3-v001/blob/main/services/grafana/provisioning/dashboards/dashboard.yaml) и /services/garfana/provisioning/datasources/[datasource.yaml](https://github.com/vvbelyanin/mle-project-sprint-3-v001/blob/main/services/grafana/provisioning/datasources/datasource.yaml)
 - Сохраненный дашборд находится в файле /services/garfana/provisioning/dashboards/[dashboard.json](https://github.com/vvbelyanin/mle-project-sprint-3-v001/blob/main/services/grafana/provisioning/dashboards/dashboard.json)
-- Скриншот дашборда находится в файле /services/garfana/provisioning/dashboards/[screenshot.jpg](https://github.com/vvbelyanin/mle-project-sprint-3-v001/blob/main/services/grafana/provisioning/dashboards/screenshot.jpg) и продублирован в Monitoring.md
+- Скриншот дашборда находится в файле /services/garfana/provisioning/dashboards/[screenshot.jpg](https://github.com/vvbelyanin/mle-project-sprint-3-v001/blob/main/services/grafana/provisioning/dashboards/screenshot.jpg) и продублирован в [Monitoring.md](https://github.com/vvbelyanin/mle-project-sprint-3-v001/blob/main/Monitoring.md)
 ```
 # сборка и запуск контейнера с обновленной конфигурацией в фоновом режиме
 docker compose -f docker-compose-stage-4.yaml up --build -d
@@ -229,7 +233,9 @@ cd app/
 # запуск скрипта с имитацией нагрузки (1000 запросов)
 python load_test.py
 ```
-Можно протестировать сервисы в web UI, см. также Monitoring.md
+Тестирование Grafana: http://127.0.0.1:3000    
+Нужно ввести  логин и пароль, затем выбрать в боковом меню: Dashboards → My dashboard
+Описание дашборда см. в [Monitoring.md](https://github.com/vvbelyanin/mle-project-sprint-3-v001/blob/main/Monitoring.md)
 Прервать работу скрипта load_test.py можно по Ctrl-C
 
 После окончания работы с сервисом:

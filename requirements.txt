@@ -5,3 +5,4 @@ fastapi==0.111.0
 uvicorn[standard]
 ipykernel==6.29.4
 sqlalchemy==2.0.30
+requests==2.32.3

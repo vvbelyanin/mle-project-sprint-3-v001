@@ -11,14 +11,29 @@ Dependencies:
 """
 
 import os
+import sys
 import pickle
 import pandas as pd
 from sqlalchemy import create_engine
 from catboost import CatBoostRegressor
+from dotenv import load_dotenv
 
 TABLE_NAME = 'clean_flats'
 RANDOM_STATE = 42
 MODEL_NAME = 'fitted_model.pkl'
+ENV_VARS = [
+    'DB_DESTINATION_USER',
+    'DB_DESTINATION_PASSWORD',
+    'DB_DESTINATION_HOST',
+    'DB_DESTINATION_PORT',
+    'DB_DESTINATION_NAME'
+    ]
+
+load_dotenv()
+
+if not all(_ in os.environ for _ in ENV_VARS):
+    print("Cannot create model: environment variables are not defined, check .env file.")
+    sys.exit()
 
 con = create_engine(
     f"postgresql://{os.getenv('DB_DESTINATION_USER')}:"
