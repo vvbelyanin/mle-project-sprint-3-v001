@@ -67,7 +67,7 @@ cd services/app/
 Метод `validate_params()` класса проверяет параметры модели на соответствие списку требуемых полей.     
 Функция `gen_random_data()` генерирует случайные параметры модели.
      
-Код микросервиса реализован в services/app/app.py.
+Код микросервиса реализован в services/app/[app.py](https://github.com/vvbelyanin/mle-project-sprint-3-v001/blob/main/services/app/app.py).
 Определено три эндпоинта:
 / - возвращение статуса "Alive"
 /predict - возврат значения предсказания модели для заданных входных параметров
