@@ -1,13 +1,14 @@
 """
-services/app.py
+services/app/app-stage-3.py
 
 This module sets up a FastAPI application with endpoints for health check, 
-prediction, and random prediction. It uses a custom handler for processing 
-predictions and generating random data.
+prediction, and random prediction. It also integrates Prometheus 
+instrumentation for monitoring.
 
 Dependencies:
     - fastapi: FastAPI framework for building APIs.
-    - fastapi_handler: Custom handler for processing predictions and generating random data.
+    - fastapi_handler: Custom handler for processing predictions.
+    - prometheus_fastapi_instrumentator: Prometheus instrumentation for FastAPI.
 
 Endpoints:
     - GET /: Health check endpoint that returns the status of the service.
@@ -16,21 +17,26 @@ Endpoints:
 
 Usage Example:
     To run this FastAPI application, use the following command:
-    uvicorn my_fastapi_app:app --host 127.0.0.1 --port 8000
+    uvicorn my_fastapi_app:app --host 0.0.0.0 --port 8000
 
     Example Requests:
-    1. Health Check:
+    Health Check:
         curl -X GET "http://localhost:8000/"
 
-    2. Get Random Prediction:
+    Get Random Prediction:
         curl -X GET "http://localhost:8000/random"
+
 """
 
 from fastapi import FastAPI
 from fastapi_handler import FastApiHandler, gen_random_data
+from prometheus_fastapi_instrumentator import Instrumentator
 
 app = FastAPI()
 app.handler = FastApiHandler()
+
+instrumentator = Instrumentator()
+instrumentator.instrument(app).expose(app)
 
 @app.get("/")
 def read_root() -> dict:
@@ -64,4 +70,5 @@ def get_random_prediction() -> tuple:
         tuple: A tuple containing the random parameters and the prediction result.
     """
     random_params = gen_random_data()
-    return (random_params, app.handler.handle(random_params))
+    predicted_price = app.handler.handle(random_params)['score']
+    return (random_params, predicted_price)

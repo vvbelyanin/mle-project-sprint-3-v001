@@ -1,0 +1,7 @@
+services:
+  app:  
+    env_file:
+      - ./.env
+    build: .
+    ports:
+      - "${APP_PORT}:${APP_PORT}"

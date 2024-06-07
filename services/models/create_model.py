@@ -1,8 +1,20 @@
+"""
+services/models/create_model.py
+
+This module provides the generation and fitting of a model for FastAPI-microservice
+
+Dependencies:
+    - os (to get environment variables)
+    - sqlalchemy, pandas (for reading data from PostgreSQL)
+    - catboost (for using CatBoostRegressor model)
+    - pickle (to serialize and save model)
+"""
+
 import os
+import pickle
 import pandas as pd
 from sqlalchemy import create_engine
 from catboost import CatBoostRegressor
-import pickle
 
 TABLE_NAME = 'clean_flats'
 RANDOM_STATE = 42
