@@ -1,17 +1,15 @@
 ## Инструкции по запуску микросервиса
 #### Этап 1. Написание FastAPI-микросервиса
 
-В связи с проблемами развертывания Docker в пространстве адресов РФ, проект выполнялся в среде Windows 11 с установленным Python. Различия в командах для выполнения в среде Linux и Windows незначительные.
-
 ```
 # апгрейд менеджера пакетов
-python -m pip install --upgrade pip
+python3 -m pip install --upgrade pip
 
 # создание виртуального окружения в папке .mle-sprint3-venv
-python -m venv .mle-sprint3-venv
+python3 -m venv .mle-sprint3-venv
 
 # активация виртуального окружения
-.mle-sprint3-venv\Scripts\activate   
+source .mle-sprint3-venv/bin/activate
 
 # установка необходимых пакетов
 pip install -r requirements.txt
@@ -63,6 +61,8 @@ python create_model.py
 
 # если необходимо, вернуться в основную папку
 # переход в папку со скриптами
+cd ../app/
+# или 
 cd services/app/
 ```
 
@@ -87,32 +87,27 @@ uvicorn app:app
 # отправка тестового GET-запроса, получение ответа {"status":"Alive"}
 curl "http://127.0.0.1:8000/"
 
-# отправка тестового POST-запроса, получение предсказания модели
-# создание тела запроса
-$json = @'
-{
-    "floor": 1,
-    "is_apartment": 0,
-    "kitchen_area": 7.0,
-    "living_area": 27.0,
-    "rooms": 2,
-    "total_area": 40.0,
-    "building_id": 764,
-    "build_year": 1936,
-    "building_type_int": 1,
-    "latitude": 55.74044418334961,
-    "longitude": 37.52492141723633,
-    "ceiling_height": 3.0,
-    "flats_count": 63,
-    "floors_total": 7,
-    "has_elevator": 1
-}
-'@
+# отправка тестового POST-запроса, получение ответа {"score":12859673.47644087}
+curl -X POST http://127.0.0.1:8000/predict \
+     -H "Content-Type: application/json" \
+     -d '{
+         "floor": 1,
+         "is_apartment": 0,
+         "kitchen_area": 7.0,
+         "living_area": 27.0,
+         "rooms": 2,
+         "total_area": 40.0,
+         "building_id": 764,
+         "build_year": 1936,
+         "building_type_int": 1,
+         "latitude": 55.74044418334961,
+         "longitude": 37.52492141723633,
+         "ceiling_height": 3.0,
+         "flats_count": 63,
+         "floors_total": 7,
+         "has_elevator": 1
+     }'
 
-# отправка запроса, получение ответа {"score":12859673.47644087}
-curl "http://127.0.0.1:8000/predict" `
--H "Content-Type: application/json" `
--d $json
 
 # отправка запроса для получение случайного предсказания {"score": <...>}
 curl "http://127.0.0.1:8000/random" 
@@ -132,7 +127,7 @@ POST - ресурс "/predict" выдает score модели либо сооб
 
 # если необходимо, переход в каталог services/app/
 # запуск тестов, получение OK в случае успеха
-python tests.py
+python3 tests.py
 
 # остановка ASGI-сервера в терминале, где он запущен по Ctrl-C
 ```
@@ -140,17 +135,6 @@ python tests.py
 #### Этап 2. Контейнеризация микросервиса
 
 ```
-# в интерпретаторе с правами администратора
-# включение подсистемы Windows для Linux (WSL) 
-dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart
-
-# в интерпретаторе с правами администратора
-# включение функции Virtual Machine Platform, необходимой для работы WSL 2
-dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart
-
-# установка версии WSL по умолчанию в значение 2 для использования WSL 2
-wsl --set-default-version 2
-
 # загрузка образа ОС с Python
 docker pull python:3.11-slim
 
@@ -231,7 +215,7 @@ docker compose -f docker-compose-stage-4.yaml up --build -d
 # переход в папку со скриптами
 cd app/
 # запуск скрипта с имитацией нагрузки (1000 запросов)
-python load_test.py
+python3 load_test.py
 ```
 Тестирование Grafana: http://127.0.0.1:3000    
 Нужно ввести  логин и пароль, затем выбрать в боковом меню: Dashboards → My dashboard

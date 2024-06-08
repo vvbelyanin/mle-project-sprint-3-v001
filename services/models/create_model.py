@@ -29,7 +29,7 @@ ENV_VARS = [
     'DB_DESTINATION_NAME'
     ]
 
-load_dotenv()
+load_dotenv(dotenv_path='../../.env')
 
 if not all(_ in os.environ for _ in ENV_VARS):
     print("Cannot create model: environment variables are not defined, check .env file.")

@@ -40,7 +40,7 @@ from prometheus_fastapi_instrumentator import Instrumentator
 from prometheus_client import Histogram, Gauge
 import psutil
 
-ERROR_PROBABILITY = 0.05
+ERROR_PROBABILITY = 0.1
 
 app = FastAPI()
 app.handler = FastApiHandler()
