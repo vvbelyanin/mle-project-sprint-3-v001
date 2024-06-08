@@ -13,7 +13,7 @@ Dependencies:
 
 Usage Example:
     To run this script, use the following command:
-    python load_test.py
+    python3 load_test.py
 """
 
 import time

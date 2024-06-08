@@ -5,6 +5,7 @@ This module provides the generation and fitting of a model for FastAPI-microserv
 
 Dependencies:
     - os (to get environment variables)
+    - sys (to terminate scripty by sys.exit())
     - sqlalchemy, pandas (for reading data from PostgreSQL)
     - catboost (for using CatBoostRegressor model)
     - pickle (to serialize and save model)

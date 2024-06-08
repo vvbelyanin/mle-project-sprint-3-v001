@@ -17,7 +17,7 @@ Endpoints:
 
 Usage Example:
     To run this FastAPI application, use the following command:
-    uvicorn my_fastapi_app:app --host 0.0.0.0 --port 8000
+    uvicorn app-stage-3:app --host 127.0.0.1 --port 8000
 
     Example Requests:
     Health Check:

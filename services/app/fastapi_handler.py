@@ -1,5 +1,5 @@
 """
-services/fastapi_handler.py
+services/app/fastapi_handler.py
 
 This module provides functionality to predict real estate prices 
 based on various parameters using a pre-trained machine learning model. 
@@ -20,10 +20,10 @@ Functions:
 
 Usage Example:
     To run this module, use the following command:
-    python fastapi_handler.py
+    python3 fastapi_handler.py
 
-    Example Requests:
-    1. Initialize the handler and make a prediction:
+Example Requests:
+    Initialize the handler and make a prediction:
         handler = FastApiHandler()
         test_params = {
             "floor": 1, 

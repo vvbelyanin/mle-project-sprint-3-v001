@@ -1,5 +1,5 @@
 """
-services/app.py
+services/app/app.py
 
 This module sets up a FastAPI application with endpoints for health check, 
 prediction, and random prediction. It uses a custom handler for processing 
@@ -16,7 +16,7 @@ Endpoints:
 
 Usage Example:
     To run this FastAPI application, use the following command:
-    uvicorn my_fastapi_app:app --host 127.0.0.1 --port 8000
+    uvicorn app:app --host 127.0.0.1 --port 8000
 
     Example Requests:
     1. Health Check:
