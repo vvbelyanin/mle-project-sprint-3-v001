@@ -15,7 +15,7 @@ source .mle-sprint3-venv/bin/activate
 pip install -r requirements.txt
 
 # файловая структура проекта
-📂mle-project-sprint-3-v001/
+:open_file_folder: mle-project-sprint-3-v001/
 ├── 📗Instructions.md (этот файл)
 ├── 📗Monitoring.md (файл с описанием дашборда и метрик)
 ├── 📗README.md (содержание проекта: описание этапов и выводы)
