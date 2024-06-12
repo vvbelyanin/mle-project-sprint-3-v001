@@ -1,9 +1,6 @@
 ## Инструкции по запуску микросервиса
 #### Этап 1. Написание FastAPI-микросервиса
 
-:open_file_folder: mle-project-sprint-3-v001/
-
-
 ```
 # апгрейд менеджера пакетов
 python3 -m pip install --upgrade pip
@@ -19,7 +16,39 @@ pip install -r requirements.txt
 
 # файловая структура проекта
 ```
-:open_file_folder: mle-project-sprint-3-v001/
+:open_file_folder: mle-project-sprint-3-v001/    
+├── :green_book: Instructions.md (этот файл)    
+├── :green_book: Monitoring.md (файл с описанием дашборда и метрик)    
+├── :green_book: README.md (содержание проекта: описание этапов и выводы)    
+├── :page_facing_up: requirements.txt (библиотеки для начального этапа)    
+└── :file_folder: services/    
+    ├── :file_folder: app/ (папка с кодом микросервиса)    
+    │   ├── :page_facing_up: app-stage-3.py (код для этапа 3)    
+    │   ├── :page_facing_up: app-stage-4.py (код для этапа 4)    
+    │   ├── :page_facing_up: app.py (код для этапов 1, 2)    
+    │   ├── :page_facing_up: fastapi_handler.py (класс-обработчик)    
+    │   ├── :page_facing_up: load_test.py (скрипт для имитации трафика)    
+    │   └── :page_facing_up: tests.py (тестирование микросервиса)    
+    ├── :whale2: docker-compose-stage-3.yaml (настройки для Docker)    
+    ├── :whale2: docker-compose-stage-4.yaml    
+    ├── :whale2: docker-compose.yaml    
+    ├── :whale2: Dockerfile    
+    ├── :whale2: Dockerfile-stage-3    
+    ├── :whale2: Dockerfile-stage-4    
+    ├── :file_folder: grafana/ (сервис для дашборда)    
+    │   └── :file_folder: provisioning/ (конфигурация сервиса)    
+    │       ├── :file_folder: dashboards/    
+    │       │   ├── :page_facing_up: dashboard.json (сохраненный дашборд)    
+    │       │   ├── :page_facing_up: dashboard.yaml (инициализация дашборда)    
+    │       │   └── :chart_with_upwards_trend: screenshot.jpg (скриншот)    
+    │       └── :file_folder: datasources/    
+    │           └── :page_facing_up: datasource.yaml (настройка источника данных)    
+    ├── :file_folder: models/ (папка с моделью)    
+    │   ├── :page_facing_up: create_model.py (код для генерации модели)    
+    │   ├── :page_facing_up: fitted_model.pkl (ML-модель)    
+    ├── :file_folder: prometheus/ (сервис метрик)    
+    │   ├── :page_facing_up: prometheus.yml (конфигурация)    
+    └── :page_facing_up: requirements.txt (библиотеки для сборки Docker)    
 
 ```
 # модель находится в файле sevices/models/fitted_model.pkl, ее можно повторно генерировать
