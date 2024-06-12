@@ -23,7 +23,43 @@
 - Grafana
 - Python-библиотеки для экспортёров: prometheus_client, prometheus_fastapi_instrumentator.
 
-### План выполнения проекта
+### Выполнение проекта
+
+#### Файловая структура проекта
+:open_file_folder: mle-project-sprint-3-v001/    
+├── :green_book: Instructions.md (этот файл)    
+├── :green_book: Monitoring.md (файл с описанием дашборда и метрик)    
+├── :green_book: README.md (содержание проекта: описание этапов и выводы)    
+├── :page_facing_up: requirements.txt (библиотеки для начального этапа)    
+└── :file_folder: services/    
+    ├── :file_folder: app/ (папка с кодом микросервиса)    
+    │   ├── :page_facing_up: app-stage-3.py (код для этапа 3)    
+    │   ├── :page_facing_up: app-stage-4.py (код для этапа 4)    
+    │   ├── :page_facing_up: app.py (код для этапов 1, 2)    
+    │   ├── :page_facing_up: fastapi_handler.py (класс-обработчик)    
+    │   ├── :page_facing_up: load_test.py (скрипт для имитации трафика)    
+    │   └── :page_facing_up: tests.py (тестирование микросервиса)    
+    ├── :whale2: docker-compose-stage-3.yaml (настройки для Docker)    
+    ├── :whale2: docker-compose-stage-4.yaml    
+    ├── :whale2: docker-compose.yaml    
+    ├── :whale2: Dockerfile    
+    ├── :whale2: Dockerfile-stage-3    
+    ├── :whale2: Dockerfile-stage-4    
+    ├── :file_folder: grafana/ (сервис для дашборда)    
+    │   └── :file_folder: provisioning/ (конфигурация сервиса)    
+    │       ├── :file_folder: dashboards/    
+    │       │   ├── :page_facing_up: dashboard.json (сохраненный дашборд)    
+    │       │   ├── :page_facing_up: dashboard.yaml (инициализация дашборда)    
+    │       │   └── :chart_with_upwards_trend: screenshot.jpg (скриншот)    
+    │       └── :file_folder: datasources/    
+    │           └── :page_facing_up: datasource.yaml (настройка источника данных)    
+    ├── :file_folder: models/ (папка с моделью)    
+    │   ├── :page_facing_up: create_model.py (код для генерации модели)    
+    │   ├── :page_facing_up: fitted_model.pkl (ML-модель)    
+    ├── :file_folder: prometheus/ (сервис метрик)    
+    │   ├── :page_facing_up: prometheus.yml (конфигурация)    
+    └── :page_facing_up: requirements.txt (библиотеки для сборки Docker)    
+
 
 #### Этап 1. Написание FastAPI-микросервиса
 - Программирование микросервиса, принимающего входные данные и выдающего предсказания модели в формате JSON, используя FastAPI и uvicorn
@@ -31,6 +67,30 @@
 - Заполнение файла requirements.txt
 - Написание инструкции в Instructions.md для установки и запуска микросервиса с использованием виртуального окружения
 - Добавление примера curl-запросов
+
+Есть возможность использования двух авринатов модели:    
+- генерация модели "из коробки" - скрипт create_model.py
+- загрузка модели из предыдущего спринта (по сути это пайплайн обработки данных + оптимизированная модель), скрипт load_model.py
+Код класса-обработчика `FastApiHandler` был реализован в файле services/app/[fastapi_handler.py](https://github.com/vvbelyanin/mle-project-sprint-3-v001/blob/main/services/app/fastapi_handler.py).
+Метод `validate_params()` класса проверяет параметры модели на соответствие списку требуемых полей.     
+Функция `gen_random_data()` генерирует случайные параметры модели.
+     
+Код микросервиса реализован в services/app/[app.py](https://github.com/vvbelyanin/mle-project-sprint-3-v001/blob/main/services/app/app.py).
+Определено три эндпоинта:    
+/ - возвращение статуса "Alive"    
+/predict - возврат значения предсказания модели для заданных входных параметров    
+/random - возврат значения предсказания модели для случайных параметров    
+
+По адресу http://127.0.0.1:8000/docs  - тестирование микросервиса в Swagger    
+GET - ресурс "/" выдает "Alive"    
+GET - ресурс "/random" выдает случайный score    
+POST - ресурс "/predict" выдает score модели либо сообщения об ошибках в зависимости от входных данных:
+ - {"Error": "Problem with parameters"}
+ - {"Error": "Problem with request"}
+ - 422 Error: Unprocessable Entity в случае ошибки в JSON
+
+Для проверки работы микросервиса создан скрипт sevices/app/[tests.py](https://github.com/vvbelyanin/mle-project-sprint-3-v001/blob/main/services/app/tests.py), тестирующий все эндпоинты и различные варианты ошибок входных параметров модели.
+
 
 ##### Результаты этапа 1
 - Код микросервиса в app, модель в models, requirements.txt
@@ -56,6 +116,14 @@
 - Добавьте в микросервис экспортёр с помощью `prometheus_fastapi_instrumentator`
 - Написание инструкции по запуску микросервиса и системы мониторинга в режиме `docker compose`
 
+- На этом этапе в [docker-compose.yaml](https://github.com/vvbelyanin/mle-project-sprint-3-v001/blob/main/services/docker-compose.yaml) добавлено описание сервисов prometheus и grafana, 
+новый файл: services/[docker-compose-stage-3.yaml](https://github.com/vvbelyanin/mle-project-sprint-3-v001/blob/main/services/docker-compose-stage-3.yaml)    
+- Новый Dockerfile: services/[Dockerfile-stage-3](https://github.com/vvbelyanin/mle-project-sprint-3-v001/blob/main/services/Dockerfile-stage-3)    
+- Обновленный код микросервиса находится в файле services/app/[app-stage-3.py](https://github.com/vvbelyanin/mle-project-sprint-3-v001/blob/main/services/app/app-stage-3.py) с добавленным экспортёром с помощью `prometheus_fastapi_instrumentator`
+- Создан файл конфигурации prometheus services/prometheus/prometheus.yml, предусмотрено его сохранение в томе Docker
+- Создан каталог services/grafana/ (см. этап 4)
+- В файл services/.env помещены значения переменных `GRAFANA_USER`, `GRAFANA_PASS`
+
 ##### Результаты этапа 3
 - Файл docker-compose-stage-3.yaml, в котором теперь присутствует описание сервисов Prometheus и Grafana
 - Заполненный prometheus.yml
@@ -69,6 +137,22 @@
 - Построение дашборда в Grafana
 - Сохранение дашборда в JSON-файл с названием dashboard.json и его загрузка в Git
 - Добавление скриншота дашборда и его описания в Monitoring.md
+
+
+- В файле [Monitoring.md](https://github.com/vvbelyanin/mle-project-sprint-3-v001/blob/main/Monitoring.md) приведены набор и описание ML-метрики реального времени, используемые для мониторинга работы микросервиса
+- В файл с кодом микросервиса добавлены метрики prometheus_client Gauge, Histogram, обновления сохранены в services/app/[app-stage-4.py](https://github.com/vvbelyanin/mle-project-sprint-3-v001/blob/main/services/app/app-stage-4.py)
+- Обновлены и сохранены файлы services/[Dockerfile-stage-4](https://github.com/vvbelyanin/mle-project-sprint-3-v001/blob/main/services/Dockerfile-stage-4) и services/[docker-compose-stage-4.yaml](https://github.com/vvbelyanin/mle-project-sprint-3-v001/blob/main/services/docker-compose-stage-4.yaml)
+- В файле services/app/[load_test.py](https://github.com/vvbelyanin/mle-project-sprint-3-v001/blob/main/services/app/load_test.py) содержится код, имитирующий нагрузку на сервис, а именно обращения к ресурсам /metrics и /random с интервалами до 1 с
+- В код микросервиса добавлен код для имитации ошибок с заданной вероятностью, а также задержки до 1 с:
+```
+raise HTTPException(status_code=500, detail="Random failure for testing purposes")
+time.sleep(random.random())
+```
+- Для гарантии сохранения информации при каждом перестроении контейнера, информация об источнике данных prometheus и дашборде сохраняется средствами Grafana provisioning. Для этого созданы файлы в соответствующих каталогах: /services/grafana/provisioning/dashboards/[dashboard.yaml](https://github.com/vvbelyanin/mle-project-sprint-3-v001/blob/main/services/grafana/provisioning/dashboards/dashboard.yaml) и /services/garfana/provisioning/datasources/[datasource.yaml](https://github.com/vvbelyanin/mle-project-sprint-3-v001/blob/main/services/grafana/provisioning/datasources/datasource.yaml)
+- Сохраненный дашборд находится в файле /services/garfana/provisioning/dashboards/[dashboard.json](https://github.com/vvbelyanin/mle-project-sprint-3-v001/blob/main/services/grafana/provisioning/dashboards/dashboard.json)
+- Скриншот дашборда находится в файле /services/garfana/provisioning/dashboards/[screenshot.jpg](https://github.com/vvbelyanin/mle-project-sprint-3-v001/blob/main/services/grafana/provisioning/dashboards/screenshot.jpg) и продублирован в [Monitoring.md](https://github.com/vvbelyanin/mle-project-sprint-3-v001/blob/main/Monitoring.md)
+
+Описание дашборда см. в [Monitoring.md](https://github.com/vvbelyanin/mle-project-sprint-3-v001/blob/main/Monitoring.md)
 
 ##### Результаты этапа 4
 - Описание в файле Monitoring.md выбранных метрик и обоснование их выбора
