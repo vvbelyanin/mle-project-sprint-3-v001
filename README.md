@@ -119,7 +119,7 @@ POST - ресурс "/predict" выдает score модели либо сооб
 
 На этом этапе в [docker-compose.yaml](https://github.com/vvbelyanin/mle-project-sprint-3-v001/blob/main/services/docker-compose.yaml) добавлено описание сервисов prometheus и grafana, 
 файл с дополнением кода: services/[docker-compose-stage-3-4.yaml](https://github.com/vvbelyanin/mle-project-sprint-3-v001/blob/main/services/docker-compose-stage-3-4.yaml).    
-Обновленный код микросервиса находится в файле services/app/[app-stage-3.py](https://github.com/vvbelyanin/mle-project-sprint-3-v001/blob/main/services/app/app-stage-3.py) с добавленным экспортёром с помощью `prometheus_fastapi_instrumentator`.
+Обновленный код микросервиса находится в файле services/app/[app_stage_3.py](https://github.com/vvbelyanin/mle-project-sprint-3-v001/blob/main/services/app/app_stage_3.py) с добавленным экспортёром с помощью `prometheus_fastapi_instrumentator`.
 Создан файл конфигурации prometheus services/prometheus/prometheus.yml, предусмотрено его сохранение в томе Docker.
 Создан каталог services/grafana/ (см. этап 4).
 В файл services/.env помещены значения переменных `GRAFANA_USER`, `GRAFANA_PASS`
@@ -140,7 +140,7 @@ POST - ресурс "/predict" выдает score модели либо сооб
 
 
 В файле [Monitoring.md](https://github.com/vvbelyanin/mle-project-sprint-3-v001/blob/main/Monitoring.md) приведены набор и описание ML-метрики реального времени, используемые для мониторинга работы микросервиса.    
-В файл с кодом микросервиса добавлены метрики prometheus_client Gauge, Histogram, обновления сохранены в services/app/[app-stage-4.py](https://github.com/vvbelyanin/mle-project-sprint-3-v001/blob/main/services/app/app-stage-4.py).    
+В файл с кодом микросервиса добавлены метрики prometheus_client Gauge, Histogram, обновления сохранены в services/app/[app_stage_4.py](https://github.com/vvbelyanin/mle-project-sprint-3-v001/blob/main/services/app/app_stage_4.py).    
 В файле services/app/[load_test.py](https://github.com/vvbelyanin/mle-project-sprint-3-v001/blob/main/services/app/load_test.py) содержится код, имитирующий нагрузку на сервис, а именно обращения к ресурсам /metrics и /random с интервалами до 1 с.    
 В код микросервиса добавлен код для имитации ошибок с заданной вероятностью, а также задержки до 1 с:
 ```
