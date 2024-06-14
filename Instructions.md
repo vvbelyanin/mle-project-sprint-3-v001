@@ -14,29 +14,29 @@ source .mle-sprint3-venv/bin/activate
 # установка необходимых пакетов
 pip install -r requirements.txt
 
-# генерация модели
 # перед запуском создайте/проверьте наличие /.env файла 
-# в каталоге с параметрами подключения к object storage:
-cd services/models/
-python create_model.py
+# с параметрами подключения к object storage
 
-# если необходимо, вернуться в основную папку
-# переход в папку со скриптами
-cd ../app/
-# или 
-cd services/app/
+# указание корневой папки для корректной работы импорта
+export PYTHONPATH=$(pwd)
+
+# генерация и обучение модели "из коробки" (не используется)
+python services/models/create_model.py
+
+# загрузка обученной модели (используется в микросервисе)
+python services/models/load_model.py
 
 # проверка кода микросервиса с возвратом тестового предсказания
-python fastapi_handler.py
+python services/app/fastapi_handler.py
 
 # запуск ASGI-сервера со значениями по умолчанию --host 127.0.0.1 --port 8000
-uvicorn app:app
+uvicorn services.app.app:app
 
 # в другом терминале:
 # отправка тестового GET-запроса, получение ответа {"status":"Alive"}
 curl "http://127.0.0.1:8000/"
 
-# отправка тестового POST-запроса, получение ответа {"score":12859673.47644087}
+# отправка тестового POST-запроса, получение ответа {"score": <...>}
 curl -X POST http://127.0.0.1:8000/predict \
      -H "Content-Type: application/json" \
      -d '{
@@ -63,20 +63,21 @@ curl "http://127.0.0.1:8000/random"
 # тестирование микросервиса в Swagger    
 http://127.0.0.1:8000/docs
 
-# если необходимо, переход в каталог services/app/
-# запуск тестов, получение OK в случае успеха
-python3 tests.py
+# остановка ASGI-сервера в терминале, где он запущен, по Ctrl-C
 
-# остановка ASGI-сервера в терминале, где он запущен по Ctrl-C
+# запуск тестов, получение OK в случае успеха
+python services/app/tests.py
 ```
 
 #### Этап 2. Контейнеризация микросервиса
 
 ```
-# загрузка образа ОС с Python
-docker pull python:3.11-slim
+# переход в каталог с Docker
+cd services
 
-# если нужно, переход в папку services/
+# загрузка образа ОС с Python
+docker pull python:3.10-slim
+
 # создание контейнера с использованием файла Dockerfile
 docker build -t my-fastapi-app:latest .
 
@@ -84,7 +85,7 @@ docker build -t my-fastapi-app:latest .
 docker image ls
 
 # запуск контейнера
-docker run -d -p 8000:8000 my-fastapi-app:latest
+docker run -d -e APP_MODULE=services.app.app:app -p 8000:8000 my-fastapi-app:latest
 
 # вывод списка запущенных контейнеров
 docker container ps
@@ -99,7 +100,7 @@ docker stop $(docker ps -a -q)
 # создайте/проверьте наличие файла services/.env
 # с заданной переменной окружения APP_PORT
 # создание и запуск контейнера в режиме docker compose в фоновом (detached) режиме
-docker compose up --build -d
+APP_MODULE=services.app.app:app docker compose up --build -d
 
 # проверка работы микросервиса
 curl "http://127.0.0.1:8000/"
@@ -112,11 +113,15 @@ docker compose down
 #### Этап 3. Запуск сервисов для системы мониторинга
 
 ```
-# сборка и запуск контейнера с обновленной конфигурацией в фоновом режиме
-docker compose -f docker-compose-stage-3.yaml up --build -d
+# сборка и запуск контейнера с конфигурацией для этапа 3 в фоновом режиме
+APP_MODULE=services.app.app_stage_3:app \
+    docker compose \
+        -f docker-compose.yaml \
+        -f docker-compose-stage-3-4.yaml \
+    up --build -d
 
 # проверка работы сервисов:    
-
+# при необходимости (например, в VS Code) настройте перенаправление портов
 # FastAPI-микросервис: 
 http://127.0.0.1:8000/    
 
@@ -127,28 +132,34 @@ http://127.0.0.1:9090/targets
 http://127.0.0.1:3000    
 
 # остановка и удаление контейнера
-docker compose -f docker-compose-stage-3.yaml down
+docker compose -f docker-compose.yaml -f docker-compose-stage-3-4.yaml down
 ```
 
 #### Этап 4. Построение дашборда для мониторинга
 
 ```
-# сборка и запуск контейнера с обновленной конфигурацией в фоновом режиме
-docker compose -f docker-compose-stage-4.yaml up --build -d
+# сборка и запуск контейнера с конфигурацией для этапа 4 в фоновом режиме
+APP_MODULE=services.app.app_stage_4:app \
+    docker compose \
+        -f docker-compose.yaml \
+        -f docker-compose-stage-3-4.yaml \
+    up --build -d
 
-# переход в папку со скриптами
-cd app/
 # запуск скрипта с имитацией нагрузки (1000 запросов)
-python3 load_test.py
+python app/load_test.py
 
 # Тестирование Grafana, Логин, пароль, Dashboards → My dashboard
 http://127.0.0.1:3000    
 
 # Прервать работу скрипта load_test.py можно по Ctrl-C
 
-# Окончание работы с сервисом:
-#переход в папку с Docker
-cd ..
+# окончание работы с сервисом:
 # остановка и удаление контейнера
-docker compose -f docker-compose-stage-4.yaml down
+docker compose -f docker-compose.yaml -f docker-compose-stage-3-4.yaml down
+
+# проверка дискового пространства
+docker system df
+
+# очистка всех неиспользуемых ресурсов
+docker system prune -f
 ```
